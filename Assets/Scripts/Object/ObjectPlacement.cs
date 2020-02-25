@@ -17,12 +17,16 @@ public class ObjectPlacement : MonoBehaviour
     private SpriteRenderer thisSpriteRenderer;
 
     [SerializeField]
+    private AudioClip dropAudio;
+
+    [SerializeField]
     public GameObject ItemBoxPrefab;
     public GameObject attachedItemBoxObject { private get; set; }
 
     private Camera mainCamera;
     private Plane dragPlane;
     private Vector3 dragOffset;
+    private AudioSource audioPlayer;
 
     private float rotationScaleFactor = 22.5f; // Degrees of rotation per scroll whell tick.
 
@@ -31,12 +35,13 @@ public class ObjectPlacement : MonoBehaviour
     {
         mainCamera = Camera.main;
         initialPosition = this.transform.position;
+        audioPlayer = GetComponent<AudioSource>();
     }
 
     // Tests whether the object's collider is touching any other colliders.
     private bool testCanBePlaced()
     {
-        if (thisCollider.IsTouchingLayers(~0)) // Checks for collision with every layer.
+        if (thisCollider.IsTouchingLayers(LayerMask.GetMask("Default")))
         {
             return false;
         } else
@@ -60,8 +65,10 @@ public class ObjectPlacement : MonoBehaviour
                 {
                     thisCollider.isTrigger = false;
                     currentGrabState = GrabState.Placed;
+                    this.gameObject.layer = 0;
                     attachedItemBoxObject.GetComponent<Button>().interactable = false;
                     attachedItemBoxObject.GetComponent<ItemBoxLogic>().StartRemove();
+                    audioPlayer.PlayOneShot(dropAudio, 1f);
                 }
                 else
                 {
@@ -69,6 +76,16 @@ public class ObjectPlacement : MonoBehaviour
                     currentGrabState = GrabState.Grabable;
                     attachedItemBoxObject.GetComponent<ItemBoxLogic>().ToggleItemImage(true);
                 }
+                thisSpriteRenderer.sortingLayerName = "Default";
+                thisRigidbody.bodyType = RigidbodyType2D.Static;
+            }
+
+            if (Input.GetMouseButtonDown(1))
+            {
+                this.transform.position = initialPosition;
+                currentGrabState = GrabState.Grabable;
+                attachedItemBoxObject.GetComponent<ItemBoxLogic>().ToggleItemImage(true);
+
                 thisSpriteRenderer.sortingLayerName = "Default";
                 thisRigidbody.bodyType = RigidbodyType2D.Static;
             }

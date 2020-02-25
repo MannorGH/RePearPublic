@@ -17,7 +17,7 @@ public class ConveyorBeltLogic : MonoBehaviour
 
     private float timeUntilNextSpawn = 0.0f;
     [SerializeField]
-    private float spawnCooldown = 4.0f;
+    public float spawnCooldown = 4.0f;
 
     private string conveyorBeltBoxPrefabPath = "Prefabs/ConveyorBeltBox";
     [SerializeField]

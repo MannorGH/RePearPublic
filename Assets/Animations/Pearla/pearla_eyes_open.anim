@@ -26,7 +26,7 @@ AnimationClip:
       value: {fileID: -9067571106501859841, guid: 5301e14f3b6473747b200b721defca14,
         type: 3}
     attribute: m_Sprite
-    path: Body/pearla_eyes_sprite2_0
+    path: Container/Body/pearla_eyes_sprite2_0
     classID: 212
     script: {fileID: 0}
   m_SampleRate: 60
@@ -37,7 +37,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 3205639215
+      path: 566448512
       attribute: 0
       script: {fileID: 0}
       typeID: 212

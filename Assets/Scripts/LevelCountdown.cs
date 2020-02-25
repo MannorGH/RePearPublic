@@ -6,15 +6,22 @@ public class LevelCountdown : MonoBehaviour
 {
     [SerializeField]
     private GameObject pear;
+    [SerializeField]
+    private GameObject belt;
 
-    private float animationLength = 5.5f;
+    [SerializeField]
+    private float initialSpawnDelay, finalSpawnDelay;
+
+    private float animationLength = 5.0f;
     private void Start()
     {
+        belt.GetComponent<ConveyorBeltLogic>().spawnCooldown = initialSpawnDelay;
         Invoke("EnableMovement", animationLength);
     }
 
     private void EnableMovement()
     {
-        pear.GetComponent<PlayerBehaviour>().doMove = true;
+        pear.GetComponent<PlayerBehaviour>().StartMovement();
+        belt.GetComponent<ConveyorBeltLogic>().spawnCooldown = finalSpawnDelay;
     }
 }

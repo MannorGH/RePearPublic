@@ -35,6 +35,13 @@ public class ChangeLevel : MonoBehaviour
         Invoke("LoadLevelSelect", fadeDuration);
     }
 
+    public void InvokeResetLevel()
+    {
+        thisAnimator.gameObject.SetActive(true);
+        thisAnimator.SetTrigger("TriggerFadeOut");
+        Invoke("ResetLevel", fadeDuration);
+    }
+
     public void LoadNextLevel()
     {
         SceneManager.LoadScene(nextLevelSceneName);
@@ -50,4 +57,8 @@ public class ChangeLevel : MonoBehaviour
         SceneManager.LoadScene(levelSelectSceneName);
     }
 
+    public void ResetLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
 }

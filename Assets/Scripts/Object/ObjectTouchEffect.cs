@@ -5,17 +5,32 @@ using UnityEngine;
 public class ObjectTouchEffect : MonoBehaviour
 {
     [SerializeField]
+    private AudioClip bounceAudio;
+
+    [SerializeField]
     private EffectType thisEffectType;
-    private bool isEffectActive = false;
-    //private PlayerBehaviour birne;
+    private PlayerBehaviour birne;
+    private Animator anim;
+    private AudioSource audioPlayer;
 
     public float jumpForce = 1f;
+
+    private bool OneTimeEffectWasTriggered = false;
+
+
+    private void Awake()
+    {
+        anim = GetComponent<Animator>();
+        audioPlayer = GetComponent<AudioSource>();
+
+    }
 
     // Applies the object effect when the player touches the object.
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("PlayerHitbox") && !isEffectActive)
+        if (collision.gameObject.CompareTag("PlayerHitbox"))
         {
+            birne = collision.gameObject.GetComponent<PlayerBehaviour>();
             // Effekt auslösen.
             switch (thisEffectType)
             {
@@ -26,32 +41,36 @@ public class ObjectTouchEffect : MonoBehaviour
                     }
                 case EffectType.Bouncy:
                     {
-                        var rb = collision.collider.attachedRigidbody;
-                        rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                        birne.Jump(jumpForce, Vector2.up);
+                        audioPlayer.PlayOneShot(bounceAudio, 1f);
                         break;
                     }
                 case EffectType.Breaking:
                     {
-
+                        if (!OneTimeEffectWasTriggered) {
+                            anim.SetTrigger("Break");
+                            Invoke("CookieDestroyer", 1f);
+                            OneTimeEffectWasTriggered = true;
+                        }
                         break;
                     }
                 case EffectType.Deadly:
                     {
-
+                        if (!OneTimeEffectWasTriggered)
+                        {
+                            birne.Kill();
+                            OneTimeEffectWasTriggered = true;
+                        }
                         break;
                     }
                 case EffectType.Slippery:
                     {
-                        //birne = collision.gameObject.GetComponent<PlayerBehaviour>();
-                        //birne.speed = birne.speed * 3f;
-                        //Invoke("SlideStop", 0.5f);
+                        birne.SpeedUp();
                         break;
                     }
                 case EffectType.Sticky:
                     {
-                        //var pb = collision.gameObject.GetComponent<PlayerBehaviour>();
-                        //pb.speed = pb.speed / 3f;
-                        //Invoke("StickStop", 0.5f);
+                        birne.StickUp();
                         break;
                     }
                 default:
@@ -60,8 +79,6 @@ public class ObjectTouchEffect : MonoBehaviour
                         break;
                     }
             }
-
-            isEffectActive = true;
         }
     }
 
@@ -69,65 +86,57 @@ public class ObjectTouchEffect : MonoBehaviour
     // Removes the object effect when the player stops touching the object.
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("PlayerHitbox") && isEffectActive)
-        {
-            // Effekt entfernen.
-            switch (thisEffectType)
-            {
-                case EffectType.None:
-                    {
+        //if (collision.gameObject.CompareTag("PlayerHitbox") && birne.isEffectActive)
+        //{
+        //    // Effekt entfernen.
+        //    switch (thisEffectType)
+        //    {
+        //        case EffectType.None:
+        //            {
 
-                        isEffectActive = false;
-                        break;
-                    }
-                case EffectType.Bouncy:
-                    {
+        //                birne.isEffectActive = false;
+        //                break;
+        //            }
+        //        case EffectType.Bouncy:
+        //            {
 
-                        isEffectActive = false;
-                        break;
-                    }
-                case EffectType.Breaking:
-                    {
+        //                birne.isEffectActive = false;
+        //                break;
+        //            }
+        //        case EffectType.Breaking:
+        //            {
 
-                        break;
-                    }
-                case EffectType.Deadly:
-                    {
+        //                break;
+        //            }
+        //        case EffectType.Deadly:
+        //            {
 
-                        isEffectActive = false;
-                        break;
-                    }
-                case EffectType.Slippery:
-                    {
-                        isEffectActive = false;
-                        break;
-                    }
-                case EffectType.Sticky:
-                    {
-                        isEffectActive = false;
-                        break;
-                    }
-                default:
-                    {
-                        Debug.Log("Invalid EffectType!");
-                        break;
-                    }
-            }
-        }
+        //                birne.isEffectActive = false;
+        //                break;
+        //            }
+        //        case EffectType.Slippery:
+        //            {
+        //                birne.isEffectActive = false;
+        //                break;
+        //            }
+        //        case EffectType.Sticky:
+        //            {
+        //                birne.isEffectActive = false;
+        //                break;
+        //            }
+        //        default:
+        //            {
+        //                Debug.Log("Invalid EffectType!");
+        //                break;
+        //            }
+        //    }
+        //}
     }
 
-    private void SlideStop()
+    private void CookieDestroyer()
     {
-        //birne.speed = birne.speed / 3f;
-        isEffectActive = false;
+        Destroy(this.gameObject);
     }
-
-    private void StickStop()
-    {
-        //birne.speed = birne.speed * 3f;
-        isEffectActive = false;
-    }
-
 
     // Types of objects.
     private enum EffectType

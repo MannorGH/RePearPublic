@@ -7,6 +7,17 @@ public class ZoneReaction : MonoBehaviour
     [SerializeField]
     private ZoneType thisZoneType;
 
+    [SerializeField]
+    private AudioClip fanfare;
+
+    private AudioSource audioplayer;
+
+    private void Awake()
+    {
+        this.GetComponent<SpriteRenderer>().color = Color.clear;
+        audioplayer = GetComponent<AudioSource>();
+    }
+
     // Triggers the zone effect when the player touches the zone.
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -16,12 +27,13 @@ public class ZoneReaction : MonoBehaviour
             {
                 case ZoneType.Death:
                     {
-                        // Levelreset.
+                        collision.gameObject.GetComponent<PlayerBehaviour>().KillFast();
                         break;
                     }
                 case ZoneType.Goal:
                     {
-                        // Zur Map?
+                        collision.gameObject.GetComponent<PlayerBehaviour>().GoalReached();
+                        audioplayer.PlayOneShot(fanfare, 0.3f);
                         break;
                     }
                 default:
